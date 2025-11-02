@@ -2,25 +2,64 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Search, Youtube, Instagram, Facebook, Music2 } from "lucide-react";
+import { Search, Youtube, Instagram, Facebook, Music2, Download } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+interface VideoInfo {
+  platform: string;
+  platformName: string;
+  title: string;
+  thumbnail: string;
+  duration: string;
+  qualities: string[];
+  formats: string[];
+  url: string;
+}
 
 const DownloadSection = () => {
   const [url, setUrl] = useState("");
   const [isDetecting, setIsDetecting] = useState(false);
+  const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
+  const [selectedQuality, setSelectedQuality] = useState("1080p");
+  const [selectedFormat, setSelectedFormat] = useState("MP4");
 
-  const handleDetect = () => {
+  const handleDetect = async () => {
     if (!url.trim()) {
       toast.error("Please enter a video URL");
       return;
     }
 
     setIsDetecting(true);
-    // Simulate AI detection
-    setTimeout(() => {
+    setVideoInfo(null);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('detect-video', {
+        body: { url }
+      });
+
+      if (error) throw error;
+
+      if (data.success && data.video) {
+        setVideoInfo(data.video);
+        setSelectedQuality(data.video.qualities[data.video.qualities.length - 2] || "1080p");
+        toast.success(`${data.video.platformName} video detected!`);
+      } else {
+        toast.error(data.error || "Failed to detect video");
+      }
+    } catch (error: any) {
+      console.error('Detection error:', error);
+      toast.error(error.message || "Failed to detect video. Please try again.");
+    } finally {
       setIsDetecting(false);
-      toast.success("Platform detected! Ready to download.");
-    }, 1500);
+    }
+  };
+
+  const handleDownload = () => {
+    if (!videoInfo) return;
+    
+    toast.success(`Downloading ${videoInfo.title} in ${selectedFormat} (${selectedQuality})...`);
+    // In production, this would trigger actual download
   };
 
   const platforms = [
@@ -51,6 +90,7 @@ const DownloadSection = () => {
                 placeholder="https://youtube.com/watch?v=..."
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleDetect()}
                 className="h-14 text-lg border-2"
               />
             </div>
@@ -73,6 +113,66 @@ const DownloadSection = () => {
               )}
             </Button>
           </div>
+
+          {/* Video Info & Download Options */}
+          {videoInfo && (
+            <div className="mb-8 p-6 bg-muted/50 rounded-lg border-2 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex flex-col md:flex-row gap-6">
+                <img 
+                  src={videoInfo.thumbnail} 
+                  alt={videoInfo.title}
+                  className="w-full md:w-48 h-32 object-cover rounded-lg"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-3 py-1 bg-gradient-accent text-accent-foreground text-xs font-semibold rounded-full">
+                      {videoInfo.platformName}
+                    </span>
+                    <span className="text-sm text-muted-foreground">{videoInfo.duration}</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-4">{videoInfo.title}</h3>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Format</label>
+                      <div className="flex gap-2">
+                        {videoInfo.formats.map((format) => (
+                          <Button
+                            key={format}
+                            variant={selectedFormat === format ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedFormat(format)}
+                          >
+                            {format}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Quality</label>
+                      <select
+                        value={selectedQuality}
+                        onChange={(e) => setSelectedQuality(e.target.value)}
+                        className="w-full h-9 px-3 rounded-md border border-input bg-background text-sm"
+                      >
+                        {videoInfo.qualities.map((quality) => (
+                          <option key={quality} value={quality}>{quality}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleDownload}
+                    className="w-full sm:w-auto bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download {selectedFormat}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Platform Icons */}
           <div className="flex justify-center items-center space-x-6 pt-6 border-t">

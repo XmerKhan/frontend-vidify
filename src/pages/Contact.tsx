@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, MessageSquare, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -15,10 +16,31 @@ const Contact = () => {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Message sent! We'll get back to you soon.");
-    setFormData({ name: "", email: "", message: "" });
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('contact-form', {
+        body: formData
+      });
+
+      if (error) throw error;
+
+      if (data.success) {
+        toast.success(data.message);
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        toast.error(data.error || "Failed to send message");
+      }
+    } catch (error: any) {
+      console.error('Contact form error:', error);
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -93,9 +115,22 @@ const Contact = () => {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent">
-                    <Send className="w-4 h-4 mr-2" />
-                    Send Message
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="w-full bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin mr-2"></div>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Send Message
+                      </>
+                    )}
                   </Button>
                 </form>
               </Card>
