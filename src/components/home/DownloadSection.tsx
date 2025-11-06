@@ -29,25 +29,18 @@ const DownloadSection = () => {
     setVideoInfo(null);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/fetch`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
-
+      const response = await fetch(`https://vidify-backend.onrender.com/api/fetch?url=${encodeURIComponent(url)}`);
       const data = await response.json();
 
       if (response.ok && data.success) {
         setVideoInfo(data.result);
         toast.success(`${data.result.platform} video detected!`);
       } else {
-        toast.error("Sorry, unable to fetch this video. Try another link.");
+        toast.error("Sorry, unable to fetch this video.");
       }
     } catch (error: any) {
       console.error('Detection error:', error);
-      toast.error("Sorry, unable to fetch this video. Try another link.");
+      toast.error("Sorry, unable to fetch this video.");
     } finally {
       setIsDetecting(false);
     }
