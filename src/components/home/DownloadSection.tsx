@@ -5,12 +5,18 @@ import { Card } from "@/components/ui/card";
 import { Search, Youtube, Instagram, Facebook, Music2, Download, Copy, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
+interface VideoFormat {
+  quality: string;
+  downloadUrl: string;
+}
+
 interface VideoInfo {
   platform: string;
   title: string;
   thumbnail: string;
-  downloadUrl: string;
-  quality: string;
+  downloadUrl?: string;
+  quality?: string;
+  formats?: VideoFormat[];
 }
 
 const DownloadSection = () => {
@@ -36,19 +42,20 @@ const DownloadSection = () => {
         setVideoInfo(data.result);
         toast.success(`${data.result.platform} video detected!`);
       } else {
-        toast.error("Sorry, unable to fetch this video.");
+        toast.error("Invalid or unsupported video link. Please try again.");
       }
     } catch (error: any) {
       console.error('Detection error:', error);
-      toast.error("Sorry, unable to fetch this video.");
+      toast.error("Invalid or unsupported video link. Please try again.");
     } finally {
       setIsDetecting(false);
     }
   };
 
-  const handleDownload = () => {
-    if (!videoInfo?.downloadUrl) return;
-    window.open(videoInfo.downloadUrl, '_blank');
+  const handleDownload = (url?: string) => {
+    const downloadUrl = url || videoInfo?.downloadUrl;
+    if (!downloadUrl) return;
+    window.open(downloadUrl, '_blank');
     toast.success(`Opening download link...`);
   };
 
@@ -131,39 +138,61 @@ const DownloadSection = () => {
                     <span className="px-3 py-1 bg-gradient-accent text-accent-foreground text-xs font-semibold rounded-full">
                       {videoInfo.platform}
                     </span>
-                    <span className="px-3 py-1 bg-muted text-foreground text-xs font-semibold rounded-full">
-                      {videoInfo.quality}
-                    </span>
+                    {videoInfo.quality && (
+                      <span className="px-3 py-1 bg-muted text-foreground text-xs font-semibold rounded-full">
+                        {videoInfo.quality}
+                      </span>
+                    )}
                   </div>
                   <h3 className="text-lg font-bold text-foreground mb-4">{videoInfo.title}</h3>
                   
-                  <div className="flex flex-wrap gap-3">
-                    <Button
-                      onClick={handleDownload}
-                      className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Download Now
-                    </Button>
-                    
-                    <Button
-                      onClick={handleCopyLink}
-                      variant="outline"
-                      className="font-semibold"
-                    >
-                      {copied ? (
-                        <>
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4 mr-2" />
-                          Copy Link
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                  {/* Show multiple format buttons if available */}
+                  {videoInfo.formats && videoInfo.formats.length > 0 ? (
+                    <div className="space-y-3">
+                      <p className="text-sm text-muted-foreground">Available formats:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {videoInfo.formats.map((format, index) => (
+                          <Button
+                            key={index}
+                            onClick={() => handleDownload(format.downloadUrl)}
+                            className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
+                            size="sm"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            {format.quality}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-3">
+                      <Button
+                        onClick={() => handleDownload()}
+                        className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download Now
+                      </Button>
+                      
+                      <Button
+                        onClick={handleCopyLink}
+                        variant="outline"
+                        className="font-semibold"
+                      >
+                        {copied ? (
+                          <>
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Copied!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4 mr-2" />
+                            Copy Link
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
