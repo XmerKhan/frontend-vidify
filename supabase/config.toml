@@ -1,7 +1,1 @@
-project_id = "drqdyqiexukhvzwkykfs"
-
-[functions.detect-video]
-verify_jwt = false
-
-[functions.contact-form]
-verify_jwt = false
+project_id = "hmpmndnftoyxwuqyntfv"

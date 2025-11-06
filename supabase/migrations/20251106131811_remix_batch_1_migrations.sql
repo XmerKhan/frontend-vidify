@@ -1,3 +1,5 @@
+
+-- Migration: 20251105122547
 -- Create comments table for blog posts
 CREATE TABLE public.blog_comments (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
