@@ -42,11 +42,11 @@ const DownloadSection = () => {
         setVideoInfo(data.result);
         toast.success(`${data.result.platform} video detected!`);
       } else {
-        toast.error("Invalid or unsupported video link. Please try again.");
+        toast.error("Sorry, unable to fetch this video. Try another link.");
       }
     } catch (error: any) {
       console.error('Detection error:', error);
-      toast.error("Invalid or unsupported video link. Please try again.");
+      toast.error("Sorry, unable to fetch this video. Try another link.");
     } finally {
       setIsDetecting(false);
     }
