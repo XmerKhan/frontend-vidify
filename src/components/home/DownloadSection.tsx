@@ -130,15 +130,13 @@ const DownloadSection = () => {
             <div className="mb-8 p-6 bg-muted/50 rounded-lg border-2 animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="flex flex-col md:flex-row gap-6">
                 {/* Thumbnail */}
-                {videoInfo.thumbnail && (
-                  <div className="flex-shrink-0">
-                    <img 
-                      src={videoInfo.thumbnail} 
-                      alt={videoInfo.title}
-                      className="w-full md:w-64 h-36 object-cover rounded-lg shadow-lg"
-                    />
-                  </div>
-                )}
+                <div className="flex-shrink-0">
+                  <img 
+                    src={videoInfo.thumbnail || "https://placehold.co/320x180/1a1a1a/666666?text=No+Thumbnail"} 
+                    alt={videoInfo.title}
+                    className="w-full md:w-64 h-36 object-cover rounded-lg shadow-lg"
+                  />
+                </div>
                 
                 {/* Video Info & Controls */}
                 <div className="flex-1 flex flex-col gap-4">
