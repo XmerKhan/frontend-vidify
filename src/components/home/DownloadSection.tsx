@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Search, Youtube, Instagram, Facebook, Music2, Download, Copy, CheckCircle } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Search, Youtube, Instagram, Facebook, Music2, Download } from "lucide-react";
 import { toast } from "sonner";
 
 interface VideoFormat {
@@ -25,7 +26,7 @@ const DownloadSection = () => {
   const [url, setUrl] = useState("");
   const [isDetecting, setIsDetecting] = useState(false);
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [selectedFormat, setSelectedFormat] = useState<string>("");
 
   const handleDetect = async () => {
     if (!url.trim()) {
@@ -35,6 +36,7 @@ const DownloadSection = () => {
 
     setIsDetecting(true);
     setVideoInfo(null);
+    setSelectedFormat("");
 
     try {
       const response = await fetch(`https://vidify-backend.onrender.com/api/fetch?url=${encodeURIComponent(url)}`);
@@ -61,23 +63,14 @@ const DownloadSection = () => {
     }
   };
 
-  const handleDownload = (downloadUrl: string) => {
-    if (!downloadUrl) return;
-    window.open(downloadUrl, '_blank');
-    toast.success("Opening download link...");
-  };
-
-  const handleCopyLink = async (downloadUrl: string) => {
-    if (!downloadUrl) return;
+  const handleDownload = () => {
+    if (!selectedFormat || !videoInfo) return;
     
-    try {
-      await navigator.clipboard.writeText(downloadUrl);
-      setCopied(true);
-      toast.success("Link copied to clipboard!");
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast.error("Failed to copy link");
-    }
+    const format = videoInfo.formats.items.find(f => f.quality === selectedFormat);
+    if (!format?.url) return;
+    
+    window.open(format.url, '_blank');
+    toast.success("Opening download link...");
   };
 
   const platforms = [
@@ -134,34 +127,59 @@ const DownloadSection = () => {
 
           {/* Video Info & Download Options */}
           {videoInfo && (
-            <div className="mb-8 p-6 bg-muted/50 rounded-lg border-2 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="mb-8 p-6 bg-muted/50 rounded-lg border-2 animate-in fade-in slide-in-from-top-2 duration-500">
               <div className="flex flex-col md:flex-row gap-6">
+                {/* Thumbnail */}
                 {videoInfo.thumbnail && (
-                  <img 
-                    src={videoInfo.thumbnail} 
-                    alt={videoInfo.title}
-                    className="w-full md:w-48 h-32 object-cover rounded-lg"
-                  />
-                )}
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-foreground mb-4">{videoInfo.title}</h3>
-                  
-                  <div className="space-y-3">
-                    <p className="text-sm text-muted-foreground">Available formats:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {videoInfo.formats.items.map((format, index) => (
-                        <Button
-                          key={index}
-                          onClick={() => handleDownload(format.url)}
-                          className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
-                          size="sm"
-                        >
-                          <Download className="w-4 h-4 mr-2" />
-                          {format.quality} {format.sizeText && `(${format.sizeText})`}
-                        </Button>
-                      ))}
-                    </div>
+                  <div className="flex-shrink-0">
+                    <img 
+                      src={videoInfo.thumbnail} 
+                      alt={videoInfo.title}
+                      className="w-full md:w-64 h-36 object-cover rounded-lg shadow-lg"
+                    />
                   </div>
+                )}
+                
+                {/* Video Info & Controls */}
+                <div className="flex-1 flex flex-col gap-4">
+                  <h3 className="text-xl font-bold text-foreground leading-tight">
+                    {videoInfo.title}
+                  </h3>
+                  
+                  {videoInfo.formats.items.length > 0 ? (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                          Select Format
+                        </label>
+                        <Select value={selectedFormat} onValueChange={setSelectedFormat}>
+                          <SelectTrigger className="w-full md:w-80 h-12 border-2">
+                            <SelectValue placeholder="Choose video quality..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {videoInfo.formats.items.map((format, index) => (
+                              <SelectItem key={index} value={format.quality}>
+                                {format.quality} {format.sizeText && `(${format.sizeText})`}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {selectedFormat && (
+                        <Button
+                          onClick={handleDownload}
+                          size="lg"
+                          className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent w-full md:w-auto animate-in fade-in duration-300"
+                        >
+                          <Download className="w-5 h-5 mr-2" />
+                          Download Video
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-destructive">No download formats available for this video.</p>
+                  )}
                 </div>
               </div>
             </div>
