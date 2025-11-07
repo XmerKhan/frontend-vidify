@@ -7,16 +7,18 @@ import { toast } from "sonner";
 
 interface VideoFormat {
   quality: string;
-  downloadUrl: string;
+  url: string;
+  size?: number;
+  sizeText?: string;
 }
 
 interface VideoInfo {
-  platform: string;
   title: string;
   thumbnail: string;
-  downloadUrl?: string;
-  quality?: string;
-  formats?: VideoFormat[];
+  duration: number;
+  formats: {
+    items: VideoFormat[];
+  };
 }
 
 const DownloadSection = () => {
@@ -36,15 +38,22 @@ const DownloadSection = () => {
 
     try {
       const response = await fetch(`https://vidify-backend.onrender.com/api/fetch?url=${encodeURIComponent(url)}`);
+      
+      if (!response.ok) {
+        toast.error("Sorry, unable to fetch this video. Try another link.");
+        setIsDetecting(false);
+        return;
+      }
+
       const data = await response.json();
 
-      if (response.ok && data.success) {
-        setVideoInfo(data.result);
-        toast.success(`${data.result.platform} video detected!`);
+      if (data.title && data.formats?.items) {
+        setVideoInfo(data);
+        toast.success("Video detected successfully!");
       } else {
         toast.error("Sorry, unable to fetch this video. Try another link.");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Detection error:', error);
       toast.error("Sorry, unable to fetch this video. Try another link.");
     } finally {
@@ -52,18 +61,17 @@ const DownloadSection = () => {
     }
   };
 
-  const handleDownload = (url?: string) => {
-    const downloadUrl = url || videoInfo?.downloadUrl;
+  const handleDownload = (downloadUrl: string) => {
     if (!downloadUrl) return;
     window.open(downloadUrl, '_blank');
-    toast.success(`Opening download link...`);
+    toast.success("Opening download link...");
   };
 
-  const handleCopyLink = async () => {
-    if (!videoInfo?.downloadUrl) return;
+  const handleCopyLink = async (downloadUrl: string) => {
+    if (!downloadUrl) return;
     
     try {
-      await navigator.clipboard.writeText(videoInfo.downloadUrl);
+      await navigator.clipboard.writeText(downloadUrl);
       setCopied(true);
       toast.success("Link copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
@@ -128,71 +136,32 @@ const DownloadSection = () => {
           {videoInfo && (
             <div className="mb-8 p-6 bg-muted/50 rounded-lg border-2 animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="flex flex-col md:flex-row gap-6">
-                <img 
-                  src={videoInfo.thumbnail} 
-                  alt={videoInfo.title}
-                  className="w-full md:w-48 h-32 object-cover rounded-lg"
-                />
+                {videoInfo.thumbnail && (
+                  <img 
+                    src={videoInfo.thumbnail} 
+                    alt={videoInfo.title}
+                    className="w-full md:w-48 h-32 object-cover rounded-lg"
+                  />
+                )}
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-3 py-1 bg-gradient-accent text-accent-foreground text-xs font-semibold rounded-full">
-                      {videoInfo.platform}
-                    </span>
-                    {videoInfo.quality && (
-                      <span className="px-3 py-1 bg-muted text-foreground text-xs font-semibold rounded-full">
-                        {videoInfo.quality}
-                      </span>
-                    )}
-                  </div>
                   <h3 className="text-lg font-bold text-foreground mb-4">{videoInfo.title}</h3>
                   
-                  {/* Show multiple format buttons if available */}
-                  {videoInfo.formats && videoInfo.formats.length > 0 ? (
-                    <div className="space-y-3">
-                      <p className="text-sm text-muted-foreground">Available formats:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {videoInfo.formats.map((format, index) => (
-                          <Button
-                            key={index}
-                            onClick={() => handleDownload(format.downloadUrl)}
-                            className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
-                            size="sm"
-                          >
-                            <Download className="w-4 h-4 mr-2" />
-                            {format.quality}
-                          </Button>
-                        ))}
-                      </div>
+                  <div className="space-y-3">
+                    <p className="text-sm text-muted-foreground">Available formats:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {videoInfo.formats.items.map((format, index) => (
+                        <Button
+                          key={index}
+                          onClick={() => handleDownload(format.url)}
+                          className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
+                          size="sm"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          {format.quality} {format.sizeText && `(${format.sizeText})`}
+                        </Button>
+                      ))}
                     </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-3">
-                      <Button
-                        onClick={() => handleDownload()}
-                        className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Download Now
-                      </Button>
-                      
-                      <Button
-                        onClick={handleCopyLink}
-                        variant="outline"
-                        className="font-semibold"
-                      >
-                        {copied ? (
-                          <>
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            Copied!
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-4 h-4 mr-2" />
-                            Copy Link
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
             </div>
