@@ -6,8 +6,8 @@ const Footer = () => {
 
   return (
     <footer className="bg-primary text-primary-foreground">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
@@ -103,12 +103,12 @@ const Footer = () => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 border-t border-primary-foreground/10">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-primary-foreground/70 text-center md:text-left">
+        <div className="pt-6 sm:pt-8 border-t border-primary-foreground/10">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-3 sm:space-y-4 md:space-y-0">
+            <p className="text-xs sm:text-sm text-primary-foreground/70 text-center md:text-left">
               © {currentYear} Vidify – All Rights Reserved
             </p>
-            <p className="text-xs text-primary-foreground/50 text-center md:text-right max-w-md">
+            <p className="text-xs text-primary-foreground/50 text-center md:text-right max-w-md px-4 md:px-0">
               Vidify doesn't host videos; all rights belong to respective platforms. This tool is for personal use only.
             </p>
           </div>

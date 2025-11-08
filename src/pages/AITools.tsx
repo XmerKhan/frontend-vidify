@@ -95,51 +95,51 @@ const AITools = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="pt-24 pb-20">
+      <main className="pt-20 sm:pt-24 pb-12 sm:pb-20">
         {/* Header */}
-        <section className="py-16 px-4 bg-gradient-hero">
-          <div className="container mx-auto text-center">
-            <div className="inline-flex items-center space-x-2 bg-accent/10 text-accent px-4 py-2 rounded-full mb-6">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">AI-Powered Tools</span>
+        <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 bg-gradient-hero">
+          <div className="container mx-auto text-center max-w-5xl">
+            <div className="inline-flex items-center space-x-2 bg-accent/10 text-accent px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6">
+              <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm font-medium">AI-Powered Tools</span>
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4 sm:mb-6 px-4">
               AI Tools for Creators
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
               Powerful AI tools to help you create, optimize, and manage your video content more efficiently.
             </p>
           </div>
         </section>
 
         {/* Tools Grid */}
-        <section className="py-20 px-4">
+        <section className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
           <div className="container mx-auto max-w-6xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
               {tools.map((tool, index) => (
-                <Card key={index} className="p-8 border-2 hover:shadow-large transition-all relative overflow-hidden">
+                <Card key={index} className="p-6 sm:p-8 border-2 hover:shadow-large transition-all relative overflow-hidden">
                   {tool.comingSoon && (
-                    <div className="absolute top-4 right-4">
-                      <span className="bg-accent/10 text-accent text-xs font-semibold px-3 py-1 rounded-full">
+                    <div className="absolute top-3 sm:top-4 right-3 sm:right-4">
+                      <span className="bg-accent/10 text-accent text-xs font-semibold px-2 sm:px-3 py-1 rounded-full">
                         Coming Soon
                       </span>
                     </div>
                   )}
                   
-                  <div className="w-14 h-14 rounded-xl bg-gradient-accent flex items-center justify-center mb-6">
-                    <tool.icon className="w-7 h-7 text-accent-foreground" />
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-accent flex items-center justify-center mb-4 sm:mb-6">
+                    <tool.icon className="w-6 h-6 sm:w-7 sm:h-7 text-accent-foreground" />
                   </div>
 
-                  <h2 className="text-2xl font-bold text-foreground mb-4">
+                  <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3 sm:mb-4">
                     {tool.title}
                   </h2>
 
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
+                  <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 leading-relaxed">
                     {tool.description}
                   </p>
 
                   <Button 
-                    className={tool.comingSoon ? "opacity-50 cursor-not-allowed" : "bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold"}
+                    className={tool.comingSoon ? "opacity-50 cursor-not-allowed w-full sm:w-auto" : "bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold w-full sm:w-auto"}
                     disabled={tool.comingSoon}
                     onClick={tool.onClick}
                   >
@@ -150,18 +150,18 @@ const AITools = () => {
             </div>
 
             {/* CTA Section */}
-            <div className="mt-16 text-center">
-              <Card className="p-12 bg-gradient-primary text-primary-foreground border-0">
-                <h2 className="text-3xl font-bold mb-4">
+            <div className="mt-12 sm:mt-16 text-center">
+              <Card className="p-6 sm:p-8 lg:p-12 bg-gradient-primary text-primary-foreground border-0">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4 px-4">
                   Want More AI Tools?
                 </h2>
-                <p className="text-lg mb-8 text-primary-foreground/80 max-w-2xl mx-auto">
+                <p className="text-sm sm:text-base lg:text-lg mb-6 sm:mb-8 text-primary-foreground/80 max-w-2xl mx-auto px-4">
                   We're constantly developing new AI-powered features to help creators. Let us know what tools you'd like to see next!
                 </p>
                 <Button 
                   size="lg" 
                   variant="secondary" 
-                  className="font-semibold"
+                  className="font-semibold w-full sm:w-auto"
                   onClick={() => setFeatureModalOpen(true)}
                 >
                   Request a Feature

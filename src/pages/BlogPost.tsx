@@ -88,8 +88,8 @@ const BlogPost = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="pt-24 pb-20">
-        <article className="container mx-auto max-w-4xl px-4">
+      <main className="pt-20 sm:pt-24 pb-12 sm:pb-20">
+        <article className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <Link to="/blog" className="inline-flex items-center text-accent hover:text-accent/80 mb-6">
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -97,20 +97,20 @@ const BlogPost = () => {
           </Link>
 
           {/* Header */}
-          <header className="mb-8">
-            <Badge className="mb-4 bg-accent/10 text-accent hover:bg-accent/20">
+          <header className="mb-6 sm:mb-8">
+            <Badge className="mb-3 sm:mb-4 bg-accent/10 text-accent hover:bg-accent/20 text-xs sm:text-sm">
               {post.category}
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 sm:mb-4">
               {post.title}
             </h1>
-            <div className="flex items-center space-x-6 text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4 lg:gap-6 text-xs sm:text-sm text-muted-foreground">
               <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4" />
+                <Calendar className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>{post.date}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" />
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>{post.readTime}</span>
               </div>
               <span>By {post.author}</span>
@@ -118,7 +118,7 @@ const BlogPost = () => {
           </header>
 
           {/* Cover Image */}
-          <div className="aspect-video rounded-xl overflow-hidden mb-8">
+          <div className="aspect-video rounded-lg sm:rounded-xl overflow-hidden mb-6 sm:mb-8">
             <img 
               src={post.image} 
               alt={post.title}
@@ -127,18 +127,18 @@ const BlogPost = () => {
           </div>
 
           {/* Content */}
-          <div className="prose prose-lg max-w-none mb-12">
-            <div className="text-foreground space-y-4 whitespace-pre-line">
+          <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none mb-8 sm:mb-12">
+            <div className="text-foreground space-y-3 sm:space-y-4 whitespace-pre-line text-sm sm:text-base leading-relaxed">
               {post.content}
             </div>
           </div>
 
           {/* Comments Section */}
-          <div className="border-t pt-12">
-            <h2 className="text-3xl font-bold text-foreground mb-8">Comments</h2>
+          <div className="border-t pt-8 sm:pt-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-6 sm:mb-8">Comments</h2>
             
             {/* Comment Form */}
-            <Card className="p-6 mb-8">
+            <Card className="p-4 sm:p-6 mb-6 sm:mb-8">
               <form onSubmit={handleSubmitComment} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
@@ -174,7 +174,7 @@ const BlogPost = () => {
 
                 <Button 
                   type="submit" 
-                  className="bg-gradient-accent hover:opacity-90 text-accent-foreground"
+                  className="w-full sm:w-auto bg-gradient-accent hover:opacity-90 text-accent-foreground"
                 >
                   Post Comment
                 </Button>
@@ -182,22 +182,22 @@ const BlogPost = () => {
             </Card>
 
             {/* Comments List */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {comments.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">
+                <p className="text-sm sm:text-base text-muted-foreground text-center py-6 sm:py-8">
                   No comments yet. Be the first to share your thoughts!
                 </p>
               ) : (
                 comments.map((c, index) => (
-                  <Card key={index} className="p-6">
-                    <div className="flex items-start justify-between mb-3">
+                  <Card key={index} className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-0 mb-3">
                       <div>
-                        <h3 className="font-semibold text-foreground">{c.name}</h3>
-                        <p className="text-sm text-muted-foreground">{c.date}</p>
+                        <h3 className="text-sm sm:text-base font-semibold text-foreground">{c.name}</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{c.date}</p>
                       </div>
                       {renderStars(c.rating)}
                     </div>
-                    <p className="text-foreground leading-relaxed">{c.comment}</p>
+                    <p className="text-sm sm:text-base text-foreground leading-relaxed break-words">{c.comment}</p>
                   </Card>
                 ))
               )}

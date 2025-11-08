@@ -24,8 +24,8 @@ const Navigation = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-gradient-accent rounded-lg flex items-center justify-center">
@@ -35,12 +35,12 @@ const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors"
+                className="text-sm lg:text-base font-medium text-foreground/70 hover:text-foreground transition-colors whitespace-nowrap"
               >
                 {link.name}
               </Link>
@@ -51,9 +51,10 @@ const Navigation = () => {
           <div className="hidden md:block">
             <Button 
               onClick={() => smoothScrollTo("download-section")}
-              className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
+              className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent text-sm lg:text-base px-4 lg:px-6"
             >
-              Download Now
+              <span className="hidden lg:inline">Download Now</span>
+              <span className="lg:hidden">Download</span>
             </Button>
           </div>
 
