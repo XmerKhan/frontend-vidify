@@ -2,6 +2,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 const HeroSection = () => {
+  const smoothScrollTo = (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <section className="pt-32 pb-20 px-4 bg-gradient-hero">
       <div className="container mx-auto text-center">
@@ -29,11 +36,20 @@ const HeroSection = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in">
-          <Button size="lg" className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent text-lg px-8">
+          <Button 
+            size="lg" 
+            onClick={() => smoothScrollTo("download-section")}
+            className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent text-lg px-8"
+          >
             Start Downloading
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
-          <Button size="lg" variant="outline" className="text-lg px-8 border-2">
+          <Button 
+            size="lg" 
+            variant="outline" 
+            onClick={() => smoothScrollTo("how-it-works")}
+            className="text-lg px-8 border-2"
+          >
             See How It Works
           </Button>
         </div>

@@ -6,6 +6,14 @@ import { Menu, X, Download } from "lucide-react";
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const smoothScrollTo = (elementId: string) => {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      setIsOpen(false);
+    }
+  };
+
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Features", path: "/features" },
@@ -41,7 +49,10 @@ const Navigation = () => {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <Button className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent">
+            <Button 
+              onClick={() => smoothScrollTo("download-section")}
+              className="bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
+            >
               Download Now
             </Button>
           </div>
@@ -69,7 +80,10 @@ const Navigation = () => {
                 {link.name}
               </Link>
             ))}
-            <Button className="w-full bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent">
+            <Button 
+              onClick={() => smoothScrollTo("download-section")}
+              className="w-full bg-gradient-accent hover:opacity-90 text-accent-foreground font-semibold shadow-accent"
+            >
               Download Now
             </Button>
           </div>

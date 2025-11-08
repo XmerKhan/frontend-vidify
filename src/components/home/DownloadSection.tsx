@@ -81,7 +81,7 @@ const DownloadSection = () => {
   ];
 
   return (
-    <section className="py-20 px-4">
+    <section id="download-section" className="py-20 px-4">
       <div className="container mx-auto max-w-4xl">
         <Card className="p-8 shadow-large border-2">
           <div className="text-center mb-8">
