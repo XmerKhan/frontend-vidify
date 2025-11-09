@@ -8,6 +8,7 @@ import Features from "./pages/Features";
 import AITools from "./pages/AITools";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import AllBlogs from "./pages/AllBlogs";
 import Contact from "./pages/Contact";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/features" element={<Features />} />
           <Route path="/ai-tools" element={<AITools />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blogs" element={<AllBlogs />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/terms" element={<Terms />} />

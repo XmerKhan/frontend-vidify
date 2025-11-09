@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Calendar, Clock, ArrowLeft, Star } from "lucide-react";
-import { blogPosts } from "@/data/blogPosts";
-import { useState } from "react";
+import { loadBlogBySlug } from "@/utils/blogLoader";
+import { useState, useEffect } from "react";
 import { toast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import type { BlogComment, BlogCommentInsert } from "@/types/comments";
 
 interface Comment {
   name: string;
@@ -20,19 +22,50 @@ interface Comment {
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const post = blogPosts.find(p => p.slug === slug);
+  const post = loadBlogBySlug(slug || "");
   
   const [comments, setComments] = useState<Comment[]>([]);
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load comments from database
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (!slug) return;
+      
+      setIsLoading(true);
+      const { data, error } = await (supabase as any)
+        .from('blog_comments')
+        .select('*')
+        .eq('blog_slug', slug)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching comments:', error);
+      } else if (data) {
+        const formattedComments = data.map((c: BlogComment) => ({
+          name: c.name,
+          comment: c.comment,
+          rating: c.rating,
+          date: new Date(c.created_at).toLocaleDateString(),
+        }));
+        setComments(formattedComments);
+      }
+      setIsLoading(false);
+    };
+    
+    fetchComments();
+  }, [slug]);
 
   if (!post) {
     return <Navigate to="/blog" replace />;
   }
 
-  const handleSubmitComment = (e: React.FormEvent) => {
+  const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!name.trim() || !comment.trim() || rating === 0) {
@@ -44,11 +77,38 @@ const BlogPost = () => {
       return;
     }
 
-    const newComment: Comment = {
+    setIsSubmitting(true);
+    
+    const insertData: BlogCommentInsert = {
+      blog_slug: slug || '',
       name: name.trim(),
       comment: comment.trim(),
       rating,
-      date: new Date().toLocaleDateString(),
+    };
+    
+    const { data, error } = await (supabase as any)
+      .from('blog_comments')
+      .insert(insertData)
+      .select()
+      .single();
+
+    setIsSubmitting(false);
+
+    if (error || !data) {
+      toast({
+        title: "Error posting comment",
+        description: "Please try again later",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const commentData = data as BlogComment;
+    const newComment: Comment = {
+      name: commentData.name,
+      comment: commentData.comment,
+      rating: commentData.rating,
+      date: new Date(commentData.created_at).toLocaleDateString(),
     };
 
     setComments([newComment, ...comments]);
@@ -175,15 +235,20 @@ const BlogPost = () => {
                 <Button 
                   type="submit" 
                   className="w-full sm:w-auto bg-gradient-accent hover:opacity-90 text-accent-foreground"
+                  disabled={isSubmitting}
                 >
-                  Post Comment
+                  {isSubmitting ? "Posting..." : "Post Comment"}
                 </Button>
               </form>
             </Card>
 
             {/* Comments List */}
             <div className="space-y-3 sm:space-y-4">
-              {comments.length === 0 ? (
+              {isLoading ? (
+                <p className="text-sm sm:text-base text-muted-foreground text-center py-6 sm:py-8">
+                  Loading comments...
+                </p>
+              ) : comments.length === 0 ? (
                 <p className="text-sm sm:text-base text-muted-foreground text-center py-6 sm:py-8">
                   No comments yet. Be the first to share your thoughts!
                 </p>

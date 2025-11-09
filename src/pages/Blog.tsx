@@ -4,9 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-import { blogPosts } from "@/data/blogPosts";
+import { loadAllBlogs } from "@/utils/blogLoader";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 const Blog = () => {
+  // Load first 4 blogs for preview
+  const blogPosts = loadAllBlogs().slice(0, 4);
 
   return (
     <div className="min-h-screen bg-background">
@@ -19,9 +23,14 @@ const Blog = () => {
             <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
               Blog & Guides
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
               Tips, tricks, and guides to help you download and manage videos from any platform
             </p>
+            <Link to="/blogs">
+              <Button className="bg-gradient-accent hover:opacity-90 text-accent-foreground">
+                See All Blogs <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </section>
 
@@ -47,7 +56,7 @@ const Blog = () => {
                         {post.title}
                       </h2>
                       <p className="text-muted-foreground mb-4 line-clamp-2">
-                        {post.excerpt}
+                        {post.description}
                       </p>
                       <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                         <div className="flex items-center space-x-1">
