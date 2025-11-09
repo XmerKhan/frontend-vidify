@@ -48,7 +48,7 @@ const BlogPost = () => {
         console.error('Error fetching comments:', error);
       } else if (data) {
         const formattedComments = data.map((c: BlogComment) => ({
-          name: c.name,
+          name: c.user_name,
           comment: c.comment,
           rating: c.rating,
           date: new Date(c.created_at).toLocaleDateString(),
@@ -81,7 +81,7 @@ const BlogPost = () => {
     
     const insertData: BlogCommentInsert = {
       blog_slug: slug || '',
-      name: name.trim(),
+      user_name: name.trim(),
       comment: comment.trim(),
       rating,
     };
@@ -105,7 +105,7 @@ const BlogPost = () => {
 
     const commentData = data as BlogComment;
     const newComment: Comment = {
-      name: commentData.name,
+      name: commentData.user_name,
       comment: commentData.comment,
       rating: commentData.rating,
       date: new Date(commentData.created_at).toLocaleDateString(),
