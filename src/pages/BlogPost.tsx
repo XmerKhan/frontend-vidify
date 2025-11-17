@@ -188,10 +188,12 @@ const BlogPost = () => {
 
           {/* Content */}
           <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none mb-8 sm:mb-12">
-            <div className="text-foreground space-y-3 sm:space-y-4 whitespace-pre-line text-sm sm:text-base leading-relaxed">
-              {post.content}
-            </div>
-          </div>
+         <div 
+        className="text-foreground space-y-3 sm:space-y-4 whitespace-pre-line text-sm sm:text-base leading-relaxed"
+      // 🔥 FIX: Using dangerouslySetInnerHTML to render HTML content
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      />
+     </div>
 
           {/* Comments Section */}
           <div className="border-t pt-8 sm:pt-12">
