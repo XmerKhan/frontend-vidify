@@ -187,7 +187,7 @@ const BlogPost = () => {
           </div>
 
           {/* Content */}
-          <div className="prose prose-sm sm:prose-base lg:prose-lg mx-auto w-full max-w-6xl mb-8 sm:mb-12">
+          <div className="prose prose-sm sm:prose-base lg:prose-lg max-w-none mb-8 sm:mb-12">
          <div 
         className="text-foreground space-y-3 sm:space-y-4 whitespace-pre-line text-sm sm:text-base leading-relaxed"
       // 🔥 FIX: Using dangerouslySetInnerHTML to render HTML content
