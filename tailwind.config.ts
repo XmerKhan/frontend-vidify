@@ -57,12 +57,14 @@ export default {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-accent': 'var(--gradient-accent)',
         'gradient-hero': 'var(--gradient-hero)',
+        'gradient-blog-hero': 'var(--gradient-blog-hero)',
       },
       boxShadow: {
         'soft': 'var(--shadow-soft)',
         'medium': 'var(--shadow-medium)',
         'large': 'var(--shadow-large)',
         'accent': 'var(--shadow-accent)',
+        'hero-image': 'var(--shadow-hero-image)',
       },
       keyframes: {
         "accordion-down": {
