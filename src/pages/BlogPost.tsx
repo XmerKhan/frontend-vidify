@@ -38,7 +38,7 @@ const BlogPost = () => {
       if (!slug) return;
       
       setIsLoading(true);
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('blog_comments')
         .select('*')
         .eq('blog_slug', slug)
@@ -86,24 +86,33 @@ const BlogPost = () => {
       rating,
     };
     
-    const { data, error } = await (supabase as any)
+    const { data, error } = await supabase
       .from('blog_comments')
       .insert(insertData)
-      .select()
-      .single();
+      .select();
 
     setIsSubmitting(false);
 
-    if (error || !data) {
+    if (error) {
+      console.error('Error posting comment:', error);
       toast({
         title: "Error posting comment",
-        description: "Please try again later",
+        description: error.message || "Please try again later",
         variant: "destructive",
       });
       return;
     }
 
-    const commentData = data as BlogComment;
+    if (!data || data.length === 0) {
+      toast({
+        title: "Error posting comment",
+        description: "Comment was not saved. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const commentData = data[0] as BlogComment;
     const newComment: Comment = {
       name: commentData.user_name,
       comment: commentData.comment,
